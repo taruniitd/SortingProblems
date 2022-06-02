@@ -1,1 +1,65 @@
 
+#include <iostream>
+using namespace std;
+
+int merge(int arr[], int temp[], int left, int mid, int right);
+{
+    int i, j, k;
+    int count = 0;
+    i = left;
+    j = mid;
+    k = left;
+    while((i < mid) && (j <= right)
+    {
+        
+        if(right > left)
+        {
+            if(arr[i] <= arr[j])
+                temp[i++] = arr[j++];
+            else
+            {
+                temp[i++] = arr[j++];
+                count = count + (mid -i);
+            }
+        }
+    }    
+    while(i <= mid - 1)
+        temp[k++] = arr[i++]
+        
+    while(j <= right)
+        temp[k++] = arr[j++];
+        
+    for(int i = left; i < right; i++)
+        arr[i] = temp[i];
+        
+    return count;
+    
+}
+int mergeSort(int arr[], int temp[], int left, int right)
+{
+    int count = 0;
+    if(right > left)
+    {    
+        int mid = (left + right) / 2;
+        
+        count += mergeSort(arr, temp, left, mid -1);
+        count += mergeSort(arr, temp, mid, right);
+        
+        count += merge(arr, temp, left, mid, right);
+    }
+    return count;
+    
+}
+int countInversions(int arr[], int arr_size)
+{
+    int temp[arr_size] = { 0 };
+    return mergeSort(arr, temp, 0, arr_size - 1);
+}
+int main() {
+	int arr[] = { 1, 20, 6, 4, 5 };
+	int arr_size = sizeof(arr) / sizeof(arr[0]);
+	
+	int count = countInversions(arr, arr_size);
+	cout << " no of inversions = " << cout << endl;
+	return 0;
+}
