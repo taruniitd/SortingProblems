@@ -1,0 +1,130 @@
+#include <iostream>
+using namespace std;
+
+struct node
+{
+    int data;
+    int degree;
+    struct node* child, *sibling, *parent; 
+    
+    node(int val)
+    {
+        data = val;
+        degree = 0;
+        child = sibling = parent = nullptr;
+    }
+};
+
+list<struct node*> adjust(list<struct node*> heap)
+{
+    if(heap.size() <= 1)
+        return heap;
+    list<struct node*> new_heap;
+    list<struct node*>::iterator it1, it2, it3;
+    it1 = it2 = it3 = heap.begin();
+    
+    if(heap.size() == 2)
+    {
+        it2 = it1;
+        it2++;
+        it3 = heap.end();
+    }
+    else
+    {
+        it2++;
+        it3 = it2;
+        it3++;
+    }
+    
+    while(it1 != heap.end())
+    {
+        if(it2 == heap.end())
+            it1++;
+        else if((*it1)->degree) < (*it2)->degree))
+        {
+            it1++;
+            it2++;
+            if(it3 != heap.end())
+                it3++;
+        }
+        else if(it3 != heap.end() && ((*it1)->degree == (*it2)->degree) && ((*it1)->degree == (*it3)->degree))
+        {
+            it1++;
+            it2++;
+            it3++;
+        }
+        else if((*it1)->degree == (*it2)->degree)
+        {
+            struct node* temp;
+            *it1 = mergeBinomialTree(*it1, *it2);
+            it2 = heap.erase(it2);
+            if(it3 != heap.end())
+                it3++;
+        }
+    }
+    return heap;
+}
+
+list<struct node*> unionBH(list<struct node*> main_list_bh, list<struct node*> new_node_list)
+{
+    list<struct node*> new_list_bh;
+    list<struct node*>::iterator it_main = main_list_bh.begin();
+    list<struct node*>::iterator ot_new = new_node_list.begin();
+    
+    while(it_main != main_list_bh.end() && ot_new != new_node_list.end())
+    {
+        if((*it_main)->degree <= (*ot_new)->degree)
+        {
+            new_list_bh.push_back(*it_main);
+            it_main++;
+        }
+        else
+        {
+            new_list_bh.push_back(*ot_new);
+            ot_new++;
+        }
+            
+    }
+    while(it_main != main_list_bh.end())
+    {
+        new_list_bh.push_back(*it_main);
+        it_main++;
+    }
+    
+    while(ot_new != new_list_bh.end())
+    {
+        new_list_bh.push_back(*ot_new);
+        ot_new++;
+    }
+    return new_list_bh;
+}
+
+struct node* insertInHeap(list<struct node*> list_bh, struct node* tree_new_node)
+{
+    list<struct node*> temp;
+    
+    temp.push_back(tree_new_node);
+    
+    temp = unionBH(list_bh, temp);
+    
+    return adjust(temp);
+}
+
+struct node* insert(list<struct node*> list_bh, int val)
+{
+    struct node* temp = new struct node(val);
+    
+    return insertInHeap(list_bh, val);
+}
+
+int main() {
+    list<struct node*> list_bh;
+	insert(list_bh, 10);
+	insert(list_bh, 20);
+	insert(list_bh, 30);
+	insert(list_bh, 40);
+	insert(list_bh, 50);
+	
+	
+	return 0;
+}
