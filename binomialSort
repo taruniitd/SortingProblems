@@ -1,4 +1,7 @@
+//https://www.geeksforgeeks.org/implementation-binomial-heap/
+
 #include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 
 struct node
@@ -54,7 +57,7 @@ list<struct node*> adjust(list<struct node*> heap)
     {
         if(it2 == heap.end())
             it1++;
-        else if((*it1)->degree) < (*it2)->degree))
+        else if((*it1)->degree < (*it2)->degree)
         {
             it1++;
             it2++;
@@ -105,7 +108,7 @@ list<struct node*> unionBH(list<struct node*> main_list_bh, list<struct node*> n
         it_main++;
     }
     
-    while(ot_new != new_list_bh.end())
+    while(ot_new != new_node_list.end())
     {
         new_list_bh.push_back(*ot_new);
         ot_new++;
@@ -113,39 +116,39 @@ list<struct node*> unionBH(list<struct node*> main_list_bh, list<struct node*> n
     return new_list_bh;
 }
 
-struct node* insertInHeap(list<struct node*> list_bh, struct node* tree_new_node)
+list<struct node*> insertInHeap(list<struct node*> list_bh, struct node* tree_new_node)
 {
     list<struct node*> temp;
     
     temp.push_back(tree_new_node);
-    
+    //cout << "call unionBH " << endl;
     temp = unionBH(list_bh, temp);
-    
+    //cout << "call adjust " << endl;
     return adjust(temp);
 }
 
-struct node* insert(list<struct node*> list_bh, int val)
+list<struct node*> insert(list<struct node*> list_bh, int val)
 {
     struct node* temp = new struct node(val);
     
-    return insertInHeap(list_bh, val);
+    return insertInHeap(list_bh, temp);
 }
 
 struct node* getMin(list<struct node*> heap)
 {
-    list<struct node*>::iterator ir = heap.begin();
+    list<struct node*>::iterator it = heap.begin();
     struct node* temp = *it;
     
     while(it != heap.end())
     {
         if((*it)->data < temp->data)
-            temp = it;
+            temp = *it;
         it++;
     }
     return temp;
 }
 
-struct node* removeMinFromBinomialHeap(struct node* node_to_remove)
+list<struct node*> removeMinFromBinomialHeap(struct node* node_to_remove)
 {
     list<struct node*> heap;
     struct node* temp = node_to_remove->child;
@@ -161,7 +164,7 @@ struct node* removeMinFromBinomialHeap(struct node* node_to_remove)
     return heap;
 }
 
-list><struct node*> extract_min(list<struct node*> heap)
+list<struct node*> extract_min(list<struct node*> heap)
 {
     list<struct node*> new_heap, lo;
     struct node* temp;
@@ -178,15 +181,54 @@ list><struct node*> extract_min(list<struct node*> heap)
         it++;
     }
     lo = removeMinFromBinomialHeap(temp);
+    
+    new_heap = unionBH(new_heap, lo);
+    new_heap = adjust(new_heap);
+    return new_heap;
 }
+
+void printTree(struct node* tree_node)
+{
+    while(tree_node)
+    {
+        cout << tree_node->data << "  " << endl;
+        printTree(tree_node->child);
+        tree_node = tree_node->sibling;
+    }
+}
+
+void printHeap(list<struct node*> list_bh)
+{
+    list<struct node*>::iterator it;
+    it = list_bh.begin();
+    while(it != list_bh.end())
+    {
+        printTree(*it);
+    
+        it++;
+    }
+}
+
 int main() {
     list<struct node*> list_bh;
-	insert(list_bh, 10);
-	insert(list_bh, 20);
-	insert(list_bh, 30);
-	insert(list_bh, 40);
-	insert(list_bh, 50);
+	list_bh = insert(list_bh, 10);
+	list_bh = insert(list_bh, 20);
+	list_bh = insert(list_bh, 30);
+	list_bh = insert(list_bh, 40);
+	list_bh = insert(list_bh, 50);
 	
+	cout << "Binomial Heap is ready" << endl;
+	printHeap(list_bh);
 	
+	struct node* temp = getMin(list_bh);
+	cout << "min element = " << temp->data << endl;
+	
+	list_bh = extract_min(list_bh);
+	cout << " Binomial Heap after extract_min" << endl;
+	list_bh = extract_min(list_bh);
+	cout << " Binomial Heap after extract_min" << endl;
+	list_bh = extract_min(list_bh);
+	cout << " Binomial Heap after extract_min" << endl;
+	printHeap(list_bh);
 	return 0;
 }
