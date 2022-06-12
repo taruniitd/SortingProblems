@@ -15,6 +15,20 @@ struct node
     }
 };
 
+struct node* mergeBinomialTree(struct node* b1, struct node* b2)
+{
+    if(b1->data > b2->data)
+        swap(b1, b2);
+    
+    b2->parent = b1;
+    b2->sibling = b1->child;
+    b1->child = b2;
+    b1->degree++;
+    
+    return b1;
+    
+}
+
 list<struct node*> adjust(list<struct node*> heap)
 {
     if(heap.size() <= 1)
@@ -117,6 +131,54 @@ struct node* insert(list<struct node*> list_bh, int val)
     return insertInHeap(list_bh, val);
 }
 
+struct node* getMin(list<struct node*> heap)
+{
+    list<struct node*>::iterator ir = heap.begin();
+    struct node* temp = *it;
+    
+    while(it != heap.end())
+    {
+        if((*it)->data < temp->data)
+            temp = it;
+        it++;
+    }
+    return temp;
+}
+
+struct node* removeMinFromBinomialHeap(struct node* node_to_remove)
+{
+    list<struct node*> heap;
+    struct node* temp = node_to_remove->child;
+    struct node* lo;
+    
+    while(temp)
+    {
+        lo = temp;
+        temp = temp->sibling;
+        lo->sibling = nullptr;
+        heap.push_front(lo);
+    }
+    return heap;
+}
+
+list><struct node*> extract_min(list<struct node*> heap)
+{
+    list<struct node*> new_heap, lo;
+    struct node* temp;
+    
+    temp = getMin(heap);
+    list<struct node*>::iterator it;
+    it = heap.begin();
+    while(it != heap.end())
+    {
+        if(*it != temp)
+        {
+            new_heap.push_back(*it);
+        }
+        it++;
+    }
+    lo = removeMinFromBinomialHeap(temp);
+}
 int main() {
     list<struct node*> list_bh;
 	insert(list_bh, 10);
