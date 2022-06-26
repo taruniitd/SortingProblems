@@ -1,0 +1,160 @@
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+
+
+
+struct LinkedListNode
+{
+    int data;
+    LinkedListNode* next;
+} LinkedListNode;
+
+typedef struct LinkedListNode* node_ptr;
+
+class LinkedList
+{
+    public :
+        node_ptr create_linked_list(vector<int> v1)
+        {
+            int n = sizeof(v1) / sizeof(v1[0]);
+            return vectortoList(v1,n);
+        }
+        
+        node_ptr vectortoList(vector<int>, int n);
+        void display(node_ptr);
+};
+
+node_ptr LinkedList::vectortoList(vector<int>v1, int n)
+{
+    node_ptr root = nullptr;
+    for(int i = n-1; i >= 0; i--)
+    {
+        node_ptr temp = new struct LinkedListNode();
+        temp->data = v1[i];
+        temp->next =  root;
+        root = temp;
+    }
+    return root;
+}
+
+void LinkedList::display(node_ptr root)
+{
+    while(root != nullptr)
+    {
+        std::cout <<  root->data << "    " ;
+        root = root->next;
+    }
+    cout << std::endl;
+}
+
+void split_in_half(node_ptr head, pair<node_ptr,node_ptr>& first_second)
+{
+    if(head == nullptr)
+        return;
+    
+    if(head->next == nullptr)
+    {
+        first_second.first = head;
+        first_second.second = nullptr;
+    }
+    else
+    {
+        node_ptr slow, fast;
+        slow = head;
+        fast = slow->next;
+        
+        while(fast != nullptr)
+        {
+            fast = fast->next;
+            if(fast != nullptr)
+            {
+                fast = fast->next;
+                slow = slow->next;
+            }
+        }
+        
+        first_second.first = head;
+        first_second.second = slow->next;
+        
+        slow->next = nullptr;
+    }
+    
+}
+
+node_ptr merge_sorted_lists(node_ptr first, node_ptr second)
+{
+    if(first == nullptr)
+        return second;
+    else if(second == nullptr)
+        return first;
+        
+    node_ptr new_head;
+    
+    if(first->data < second->data)
+    {
+        new_head = first;
+        first = first->next;
+    }
+    else
+    {
+        new_head = second;
+        second = second->next;
+    }
+    
+    node_ptr new_current = new_head;
+    
+    while(first != nullptr && second != nullptr)
+    {
+        node_ptr temp = nullptr;
+        if(first->data <= second->data)
+        {
+            temp = first;
+            first = first->next;
+        }
+        else
+        {
+            temp = second;
+            second = second->next;
+        }
+        
+        new_current->next = temp;
+        new_current = temp;
+    }
+    
+    if(first != nullptr)
+        new_current->next = first;
+    else if(second != nullptr)
+        new_current->next = second;
+
+    return new_head;
+}
+
+node_ptr merge_sort(node_ptr head)
+{
+    if(head == nullptr || head->next == nullptr)
+        return head;
+        
+    pair<node_ptr,node_ptr> first_second;
+    split_in_half(head, first_second);
+    
+    first_second.first = merge_sort(first_second.first);
+    first_second.second = merge_sort(first_second.second);
+    
+    return merge_sorted_lists(first_second.first, first_second.second);
+    
+}
+int main() {
+	vector<int> v1 = { 29, 23, 82, 11, 4, 3, 21 };
+	LinkedList listObj;
+    //node_ptr list_head_1 = LinkedList::create_linked_list(v1);
+    //LinkedList::display(list_head_1);
+	   node_ptr list_head_1 = listObj.create_linked_list(v1);
+	   cout << " current Linked List" << endl;
+	   listObj.display(list_head_1);
+	
+	list_head_1 = merge_sort(list_head_1);
+	cout << "Linked List after merge sort :" << endl;
+	listObj.display(list_head_1);
+	return 0;
+}
